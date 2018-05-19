@@ -122,6 +122,11 @@
                 </div>
               </div>
             </div>
+
+            <div id="missing-chrome-extension" style="color: snow; line-height: 65px;">
+              请先安装 <a href="https://github.com/ChengOrangeJu/WebExtensionWallet"> WebExtensionWallet </a> 再使用
+            </div>
+
           </div>
         </div>
       </div>
@@ -251,6 +256,11 @@
       gauge.animationSpeed = 32; // set animation speed (32 is default value)
       gauge.set(0); // set actual value
 
+
+      $('#missing-chrome-extension').hide();
+      if(typeof(webExtensionWallet) === "undefined"){
+        $('#missing-chrome-extension').show();
+      }
 
       var dappAddress = "n1ptLwCEn8Areh9c9m7nvx6Qqspxn63Q1dQ";
 
