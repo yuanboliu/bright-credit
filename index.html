@@ -77,9 +77,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#">服务说明</a>
-            </li>
+            <!--<li class="nav-item">-->
+              <!--<a class="nav-link" href="#">服务说明</a>-->
+            <!--</li>-->
           </ul>
         </div>
       </div>
@@ -112,13 +112,13 @@
           </div>
           <div class="container">
             <span class="fa fa-search"></span>
-            <h1 class="description">搜索一下<span>你的信用积分</span></h1>
+            <h1 class="description">信用积分，了解一下</h1>
           
             <div class="search-wraper" role="search">
               <div class="input-group">
-                <input id="searchName" class="form-control search clearable" placeholder="搜索用户名，例如：tom" autocomplete="off" autofocus="" tabindex="0" autocorrect="off" autocapitalize="off" spellcheck="false"> 
+                <input id="searchName" class="form-control search clearable" placeholder="搜索地址，例如n1d6Ycs7JVkqCGDfphowQiRAHbXHzWKqKQB" autocomplete="off" autofocus="" tabindex="0" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <div class="input-group-append">
-                    <button id="searchCredit" class="btn btn-primary" style="box-shadow:none;border:none" type="button">搜索</button>
+                    <button id="searchCredit" class="btn btn-primary" style="box-shadow:none;border:none" type="button">搜一下</button>
                 </div>
               </div>
             </div>
@@ -137,7 +137,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <p>没有找到该用户的信用积分，是否创建一个？</p>
+              <p>没有找到该地址的信用积分，是否创建一个？</p>
             </div>
             <div class="modal-footer">
               <button type="button" id="jumpToCreate" data-toggle="modal" data-target="#createOne" data-dismiss="modal" class="btn btn-primary">创建</button>
@@ -157,6 +157,12 @@
                 </button>
               </div>
               <div class="modal-body">
+                <div class="form-group row">
+                  <label for="address" class="col-2 col-form-label">地址</label>
+                  <div class="col-10">
+                    <input class="form-control" type="text"  id="address">
+                  </div>
+                </div>
                   <div class="form-group row">
                       <label for="userName" class="col-2 col-form-label">用户名称</label>
                       <div class="col-10">
@@ -205,7 +211,7 @@
     <!-- Footer -->
     <footer class="py-5 bg-white">
       <div class="container">
-        <p class="m-0" style="color: #999" >Copyright &copy; powered by Levine and Gomez, all right reserved 2018</p>
+        <p class="m-0" style="color: #999;text-align: center;" >Copyright &copy; powered by Levine and Gomez, all right reserved 2018</p>
       </div>
       <!-- /.container -->
     </footer>
@@ -252,7 +258,7 @@
       var nebulas = require("nebulas"),
           Account = nebulas.Account,
           neb = new nebulas.Neb();
-      neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
+//      neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
 
       var NebPay = require("nebpay");     //https://github.com/nebulasio/nebPay
       var nebPay = new NebPay();
@@ -272,7 +278,7 @@
                 console.log("tx result: " + resp);   //resp is a JSON string
                 var respObject = JSON.parse(resp);
                 if(respObject.code === 0){
-                    alert("upload succeed!");
+                    alert("登记信用成功！");
                     clearInterval(intervalQuery);
                 }
             })
@@ -316,7 +322,7 @@
           listener:function (resp) {
             var result = resp.result;    ////resp is an object, resp.result is a JSON string
             console.log("return of rpc call: " + JSON.stringify(result))
-            $("#searchCredit").text("搜索");
+            $("#searchCredit").text("搜一下");
 
             if (result === 'null'){
               $("#needCreate").modal();
@@ -367,7 +373,7 @@
 
         $("#searchCredit").click(function() {
 
-          $(this).text("正在搜索...");
+          $(this).text("搜索中");
           
           $("#createOne")
             .find("input,textarea,select")
@@ -377,25 +383,26 @@
               .prop("checked", "")
               .end();
           var name = $("#searchName").val();
-          $("#userName").val(name);
+          $("#address").val(name);
           if(name != "") {
             getResult(name);
           } else {
-            $("#searchCredit").text("搜索");
+            $("#searchCredit").text("搜一下");
             $("#needCreate").modal();
           }
         });
 
         $("#submitCreate").click(function() {
+          var address = $("#address").val();
           var name = $("#userName").val();
           var school = $('#school').val();
           var drive = $("#driveLicence").val();
           var addr = $("#emailAddr").val();
           var fund = $("#fund").val();
           var house = $("#houseNumber").val();
-          console.log(name, school, drive, addr, fund, house);
+          console.log(address, name, school, drive, addr, fund, house);
 
-          if(name != null && name != "" && name != undefined) {
+          if(address !== null && address !== "" && address !== undefined) {
             var value = 100;
             value += getValue(school, 10);
             value += getValue(drive, 20);
@@ -406,7 +413,7 @@
             gauge.set(value);
             $("#createOne").modal("hide");
 
-            saveResult(name, value);
+            saveResult(address, value);
           }
         })
       });
