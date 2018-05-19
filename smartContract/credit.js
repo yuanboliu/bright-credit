@@ -28,7 +28,7 @@ var Credit = function() {
             return o.toString();
         }
     });
-}
+};
 
 
 Credit.prototype = {

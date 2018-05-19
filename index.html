@@ -246,8 +246,7 @@
       gauge.set(0); // set actual value
 
 
-
-      var dappAddress = "n1oXdmwuo5jJRExnZR5rbceMEyzRsPeALgm";
+      var dappAddress = "n1ptLwCEn8Areh9c9m7nvx6Qqspxn63Q1dQ";
 
       //here we use neb.js to call the "get" function to search from the Dictionary
       var nebulas = require("nebulas"),
@@ -257,7 +256,8 @@
 
       var NebPay = require("nebpay");     //https://github.com/nebulasio/nebPay
       var nebPay = new NebPay();
-      var serialNumber
+      var serialNumber;
+      var intervalQuery;
 
       function getValue(name, seed) {
             if(name != null && name != "" && name != undefined) {
@@ -269,11 +269,11 @@
       function funcIntervalQuery() {
         nebPay.queryPayInfo(serialNumber)   //search transaction result from server (result upload to server by app)
             .then(function (resp) {
-                console.log("tx result: " + resp)   //resp is a JSON string
-                var respObject = JSON.parse(resp)
+                console.log("tx result: " + resp);   //resp is a JSON string
+                var respObject = JSON.parse(resp);
                 if(respObject.code === 0){
-                    alert(`set ${$("#search_value").val()} succeed!`)
-                    clearInterval(intervalQuery)
+                    alert("upload succeed!");
+                    clearInterval(intervalQuery);
                 }
             })
             .catch(function (err) {
@@ -283,11 +283,11 @@
 
       function saveResult(key, value) {
         var to = dappAddress;
-        var value = "0";
-        var callFunction = "save"
-        var callArgs = "[\"" + $("#search_value").val() + "\",\"" + $("#add_value").val() + "\"]"
+        var val = "0";
+        var callFunction = "save";
+        var callArgs = "[\"" + key + "\",\"" + value + "\"]";
 
-        serialNumber = nebPay.call(to, value, callFunction, callArgs, {    //使用nebpay的call接口去调用合约,
+        serialNumber = nebPay.call(to, val, callFunction, callArgs, {    //使用nebpay的call接口去调用合约,
             // 处理返回结果
             listener: function(resp) {
               console.log("response of push: " + JSON.stringify(resp))
@@ -301,42 +301,63 @@
 
       function getResult(keyName) {
         var from = Account.NewAccount().getAddressString();
-
-
         var value = "0";
-        var nonce = "0"
-        var gas_price = "1000000"
-        var gas_limit = "2000000"
+        var nonce = "0";
+        var gas_price = "1000000";
+        var gas_limit = "2000000";
         var callFunction = "get";
         var callArgs = "[\"" + keyName + "\"]"; //in the form of ["args"]
         var contract = {
             "function": callFunction,
             "args": callArgs
-        }
+        };
 
-        neb.api.call(from,dappAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
-          var result = resp.result    ////resp is an object, resp.result is a JSON string
-          console.log("return of rpc call: " + JSON.stringify(result))
-          $("#searchCredit").text("搜索");
+        nebPay.simulateCall(dappAddress, 0, callFunction, callArgs, {
+          listener:function (resp) {
+            var result = resp.result;    ////resp is an object, resp.result is a JSON string
+            console.log("return of rpc call: " + JSON.stringify(result))
+            $("#searchCredit").text("搜索");
 
-          if (result === 'null'){
-            $("#needCreate").modal();
-          } else {
-            try{
+            if (result === 'null'){
+              $("#needCreate").modal();
+            } else {
+              try{
                 result = JSON.parse(result)
-            }catch (err){
+              }catch (err){
                 //result is the error message
                 console.log("error:" + err.message)
-            }
-            
-            // used fake result
-            gauge.set(getValue("test", 100));
-          }
+              }
 
-        }).catch(function (err) {
-            //cbSearch(err)
-            console.log("error:" + err.message)
-        })
+              // used fake result
+//              gauge.set(getValue("test", 100));
+              gauge.set(result.value);
+            }
+
+          }
+        });
+//        neb.api.call(from,dappAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
+//          var result = resp.result    ////resp is an object, resp.result is a JSON string
+//          console.log("return of rpc call: " + JSON.stringify(result))
+//          $("#searchCredit").text("搜索");
+//
+//          if (result === 'null'){
+//            $("#needCreate").modal();
+//          } else {
+//            try{
+//                result = JSON.parse(result)
+//            }catch (err){
+//                //result is the error message
+//                console.log("error:" + err.message)
+//            }
+//
+//            // used fake result
+//            gauge.set(getValue("test", 100));
+//          }
+//
+//        }).catch(function (err) {
+//            //cbSearch(err)
+//            console.log("error:" + err.message)
+//        })
       }
 
       $(document).ready(function() {
@@ -363,7 +384,7 @@
             $("#searchCredit").text("搜索");
             $("#needCreate").modal();
           }
-        })
+        });
 
         $("#submitCreate").click(function() {
           var name = $("#userName").val();
