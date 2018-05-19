@@ -255,12 +255,31 @@
           neb = new nebulas.Neb();
       neb.setRequest(new nebulas.HttpRequest("https://testnet.nebulas.io"));
 
+      var NebPay = require("nebpay");     //https://github.com/nebulasio/nebPay
+      var nebPay = new NebPay();
+      var serialNumber
+
       function getValue(name, seed) {
             if(name != null && name != "" && name != undefined) {
               return Math.floor(Math.random() * 500) + seed;
             }
             return 0;
           }
+
+      function funcIntervalQuery() {
+        nebPay.queryPayInfo(serialNumber)   //search transaction result from server (result upload to server by app)
+            .then(function (resp) {
+                console.log("tx result: " + resp)   //resp is a JSON string
+                var respObject = JSON.parse(resp)
+                if(respObject.code === 0){
+                    alert(`set ${$("#search_value").val()} succeed!`)
+                    clearInterval(intervalQuery)
+                }
+            })
+            .catch(function (err) {
+                console.log(err);
+            });
+    }
 
       function saveResult(key, value) {
         var to = dappAddress;
