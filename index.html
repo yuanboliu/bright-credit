@@ -262,7 +262,7 @@
         $('#missing-chrome-extension').show();
       }
 
-      var dappAddress = "n1ptLwCEn8Areh9c9m7nvx6Qqspxn63Q1dQ";
+      var dappAddress = "n1iMf7SK58Wo4a3NPDsBro8trnmjC5cJ63B";
 
       //here we use neb.js to call the "get" function to search from the Dictionary
       var nebulas = require("nebulas"),
@@ -334,7 +334,7 @@
             console.log("return of rpc call: " + JSON.stringify(result))
             $("#searchCredit").text("搜一下");
 
-            if (result === 'null'){
+            if (result === 'null' || result == ''){
               $("#needCreate").modal();
             } else {
               try{
